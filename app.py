@@ -1,0 +1,146 @@
+import os
+import torch
+import stripe
+from fastapi import FastAPI, Header, HTTPException, status
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict
+
+from src.sdkp_tensor import SDKPStateTensor
+from src.vortex_369 import Vortex369Compressor
+from src.metatron_router import MetatronCubeRouter
+from src.metatron_attention import MetatronGraphAttention
+from src.sdkp_loss import SDKPDynamicLoss
+from src.dcp_provenance import DigitalCrystalProtocol
+
+app = FastAPI(
+    title="FatherTimeHPC AI Engine API",
+    description="Scale-Density Kinematic Principle Engine with 3-6-9 Vortex Logic and Metatron K13 Routing",
+    version="0.1.0"
+)
+
+# Optional Stripe usage-based metered billing configuration
+STRIPE_API_KEY = os.getenv("STRIPE_API_KEY", "")
+if STRIPE_API_KEY:
+    stripe.api_key = STRIPE_API_KEY
+
+
+class InferenceRequest(BaseModel):
+    state_vector: Optional[List[float]] = Field(
+        default=None,
+        description="Optional 7-element state vector [P_x, P_y, P_z, D, K_x, K_y, S]."
+    )
+    input_features: List[List[float]] = Field(
+        ...,
+        description="Feature matrix formatted as [batch_size, embed_dim] or [batch_size, sequence_length, embed_dim]."
+    )
+    stripe_customer_id: Optional[str] = Field(
+        default=None, 
+        description="Stripe Customer ID for metered billing usage tracking."
+    )
+
+
+class InferenceResponse(BaseModel):
+    status: str
+    vortex_compressed_state: List[float]
+    routed_attention_shape: List[int]
+    updated_state_vector: List[float]
+    execution_metrics: Dict[str, float]
+    dcp_ledger_hash: str
+
+
+@app.get("/", status_code=status.HTTP_200_OK)
+@app.get("/health", status_code=status.HTTP_200_OK)
+async def health_check():
+    """Liveness probe endpoint for IBM Code Engine and health checks."""
+    return {
+        "status": "online",
+        "engine": "FatherTimeSDKP-HPC-AI-Engine",
+        "version": "0.1.0",
+        "orcid": "0009-0003-7925-1653"
+    }
+
+
+@app.post("/v1/predict", response_model=InferenceResponse, status_code=status.HTTP_200_OK)
+async def execute_inference(
+    payload: InferenceRequest,
+    x_api_key: Optional[str] = Header(None)
+):
+    """
+    Executes a forward pass through the SDKP HPC pipeline:
+    1. Metered usage logging via Stripe (if configured).
+    2. Applies 3-6-9 Vortex modulo compression & QCC density gating.
+    3. Routes input features across the 13-node Metatron graph topology (K13).
+    4. Computes trajectory residual loss and updates memory density (D).
+    5. Issues an immutable SHA-256 Digital Crystal Protocol (DCP) ledger stamp.
+    """
+    # 1. Usage-Based Metered Billing
+    if STRIPE_API_KEY and payload.stripe_customer_id:
+        try:
+            stripe.billing.MeterEvent.create(
+                event_name="hpc_inference_calls",
+                payload={"value": "1", "stripe_customer_id": payload.stripe_customer_id}
+            )
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Billing record failed: {str(e)}")
+
+    try:
+        # 2. Initialize Core Engine Modules
+        sdkp_tensor = SDKPStateTensor()
+        vortex_compressor = Vortex369Compressor()
+        metatron_router = MetatronCubeRouter()
+        metatron_attn = MetatronGraphAttention(embed_dim=64)
+        loss_engine = SDKPDynamicLoss()
+        dcp = DigitalCrystalProtocol(author="Donald Paul Smith", orcid="0009-0003-7925-1653")
+
+        # Custom state vector override if supplied
+        if payload.state_vector:
+            input_state = torch.tensor(payload.state_vector, dtype=torch.float32)
+            sdkp_tensor.update_state(input_state)
+        
+        current_state = sdkp_tensor.get_state_vector()
+        density_d = sdkp_tensor.get_density()
+
+        # 3. Modulo-9 Vortex & QCC Density Compression
+        vortex_output = vortex_compressor(current_state, density=density_d)
+
+        # 4. Metatron Graph Edge Routing (K13 Topology)
+        feat_tensor = torch.tensor(payload.input_features, dtype=torch.float32)
+        if feat_tensor.dim() == 2:
+            feat_tensor = feat_tensor.unsqueeze(1)
+            
+        routed_features = metatron_router(feat_tensor)
+        
+        if feat_tensor.shape[-1] == 64:
+            attn_output = metatron_attn(feat_tensor)
+            attn_shape = list(attn_output.shape)
+        else:
+            attn_shape = list(routed_features.shape)
+
+        # 5. Trajectory Residual Loss & In-Inference Density Plasticity (D)
+        target_trajectory = torch.zeros_like(current_state)
+        metrics = loss_engine(current_state, target_trajectory, density_d)
+        
+        # Dynamically adjust memory density based on trajectory error
+        sdkp_tensor.apply_density_plasticity(metrics["trajectory_mse"])
+        updated_state = sdkp_tensor.get_state_vector().tolist()
+
+        # 6. Immutable DCP SHA-256 Ledger Generation
+        ledger_payload = {
+            "vortex_output": vortex_output.detach().tolist(),
+            "metrics": metrics,
+            "updated_state": updated_state,
+            "features_batch_size": feat_tensor.shape[0]
+        }
+        ledger_hash = dcp.generate_crystal_hash(ledger_payload)
+
+        return InferenceResponse(
+            status="success",
+            vortex_compressed_state=vortex_output.detach().squeeze().tolist(),
+            routed_attention_shape=attn_shape,
+            updated_state_vector=updated_state,
+            execution_metrics=metrics,
+            dcp_ledger_hash=ledger_hash
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Inference execution failed: {str(e)}")
