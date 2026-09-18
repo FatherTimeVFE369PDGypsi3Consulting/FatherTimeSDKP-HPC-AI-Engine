@@ -66,3 +66,5 @@ FatherTimeHPC/
 
 ```bash
 python -m validation.scripts.run_all_validations
+
+python validation/scripts/run_all_validations.py
