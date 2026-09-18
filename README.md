@@ -62,3 +62,7 @@ FatherTimeHPC/
 ├── main.py                 # Pipeline execution entry point
 └── requirements.txt        # Python dependency specifications
 
+## Empirical Validation (Reproducible)
+
+```bash
+python -m validation.scripts.run_all_validations
