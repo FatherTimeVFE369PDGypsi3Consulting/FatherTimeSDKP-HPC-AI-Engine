@@ -25,3 +25,7 @@ classifiers = [
 
 [project.urls]
 "Homepage" = "https://github.com/FatherTimeVFE369PDGypsi3Consulting/FatherTimeSDKP-HPC-AI-Engine"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
