@@ -16,12 +16,13 @@ sdkp:
 
 eos:
   earth_orbital_speed_m_s: 29782.7  # your EOS anchor (document exact source)
-
+  
 amiyah_rose_smith_law:
-  lunar_drift_us_per_day: 56.0      # or 56.02 as stated in some deposits
-  mars_drift_us_per_day: 477.0      # or 477.14
-  # Add the exact formula / density ratio you used
-
+  lunar_drift_us_per_day: 56.0          # or your exact sealed value
+  mars_drift_us_per_day: 477.0          # or your exact sealed value
+  gps_clock_drift_us_per_day: 38.0      # the 38 µs/day baseline you published
+  # Add any additional factors (UPCF, equatorial offset, etc.) you used
+  
 vortex_369:
   modulus: 9
   dual_channel: [3, 6]
