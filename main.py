@@ -3,6 +3,7 @@ import torch
 from src.sdkp_tensor import SDKPStateTensor
 from src.vortex_369 import Vortex369Compressor
 from src.metatron_router import MetatronCubeRouter
+from src.metatron_attention import MetatronAttention
 from src.dcp_provenance import DigitalCrystalProtocol
 
 def run_father_time_hpc():
@@ -11,23 +12,18 @@ def run_father_time_hpc():
 
     print("=== Initializing FatherTimeHPC AI Engine ===")
     
-    # 1. State Vector Initialization
+    # 1. SDKP State Tensor
     state_engine = SDKPStateTensor()
     current_state = state_engine.get_state_vector()
-    print(f"SDKP State Vector (P, D, K, S): {current_state.detach().numpy()}")
+    print(f"SDKP State Vector: {current_state.detach().numpy()}")
 
-    # 2. Vortex Compression & Dual-Channel Balance
-    vortex = Vortex369Compressor(modulus=params['vortex_369']['modulus'])
-    compressed = vortex.digital_root_compression(current_state)
-    balanced = vortex.balance_channels(compressed)
-    print(f"3-6-9 Vortex Compressed State: {balanced.numpy()}")
+    # 2. Metatron Geometric Attention Pass
+    seq_tokens = torch.randn(1, 8, 64) # Batch size 1, Sequence length 8, Embed dim 64
+    attn_layer = MetatronAttention(embed_dim=64, num_nodes=params['metatron']['num_nodes'])
+    attn_output = attn_layer(seq_tokens)
+    print(f"Metatron Attention Output Shape: {attn_output.shape}")
 
-    # 3. Metatron Graph Routing (K13 Topology)
-    router = MetatronCubeRouter(num_nodes=params['metatron']['num_nodes'])
-    graph_output = router.route_state(balanced)
-    print(f"Metatron 13-Node Graph Tensor Shape: {graph_output.shape}")
-
-    # 4. DCP Cryptographic Provenance Stamp
+    # 3. DCP Provenance Logging
     dcp = DigitalCrystalProtocol(
         author=params['dcp']['author'], 
         orcid=params['dcp']['orcid']
