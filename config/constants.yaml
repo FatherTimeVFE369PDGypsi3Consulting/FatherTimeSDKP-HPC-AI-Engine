@@ -1,0 +1,36 @@
+# FatherTimeSDKP Framework Constants
+# Author: Donald Paul Smith (FatherTimeSDKP)
+# ORCID: 0009-0003-7925-1653
+
+author:
+  name: "Donald Paul Smith"
+  alias: "FatherTimeSDKP"
+  orcid: "0009-0003-7925-1653"
+
+sdkp:
+  # Core timescale relation used across deposits
+  # tau = S * D / K   (or full T = S * D * K * P variants)
+  scale_factor: 8046602.01          # from vortex_369.py – document derivation
+  gamma: 0.1
+  lambda_vortex: 0.05
+
+eos:
+  earth_orbital_speed_m_s: 29782.7  # your EOS anchor (document exact source)
+
+amiyah_rose_smith_law:
+  lunar_drift_us_per_day: 56.0      # or 56.02 as stated in some deposits
+  mars_drift_us_per_day: 477.0      # or 477.14
+  # Add the exact formula / density ratio you used
+
+vortex_369:
+  modulus: 9
+  dual_channel: [3, 6]
+  anchor: 9
+
+metatron:
+  num_nodes: 13
+  edges: 78
+
+dcp:
+  author: "Donald Paul Smith"
+  orcid: "0009-0003-7925-1653"
