@@ -1,0 +1,57 @@
+# Byte-compiled / Python execution files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment & Virtualenvs
+.venv/
+venv/
+ENV/
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyTorch / Model Weights & Checkpoints
+*.pt
+*.pth
+*.bin
+*.ckpt
+*.onnx
+
+# Data Version Control (DVC)
+.dvc/cache
+.dvc/tmp
+/data/*
+!/data/.gitkeep
+
+# IDEs & Code Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS System Files
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Logs & Metrics
+*.log
+logs/
+.pytest_cache/
