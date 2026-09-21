@@ -1,18 +1,17 @@
-FROM node:20-alpine
+FROM python:3.11-slim
 
 WORKDIR /app
 
-ENV NODE_ENV=production
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 ENV PORT=8080
 
-COPY package*.json ./
-
-RUN npm ci --omit=dev
+COPY requirements.txt ./
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
 EXPOSE 8080
 
-USER node
-
-CMD ["npm", "start"]
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8080}"]
